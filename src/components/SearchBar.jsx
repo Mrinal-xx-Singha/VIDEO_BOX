@@ -25,9 +25,10 @@ const SearchBar = () => {
     sx={{
       borderRadius: 20,
       border: '1px solid #e3e3e3',
-      pl: 2,
-      boxShadow: 'none',
-      mr:{ sm:5}
+      pl: 3,
+      pr:3,
+      boxShadow: 'none', 
+      mr:{ sm:4, xs:2}
     }} 
     > 
       <input
