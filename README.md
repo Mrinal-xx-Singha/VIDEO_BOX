@@ -1,6 +1,16 @@
 # Getting Started with Create React App
 # **View Deployed Site**   https://main--remarkable-choux-7fefb8.netlify.app/
 
+**`SCREEN SHOTS`**
+![Screenshot (194)](https://user-images.githubusercontent.com/100140781/233283699-3b0b778a-a9e0-4208-bec5-912c549c09c3.png)
+
+![Screenshot (193)](https://user-images.githubusercontent.com/100140781/233283813-a236902d-6790-4147-882a-b487034c7571.png)
+
+![Screenshot (190)](https://user-images.githubusercontent.com/100140781/233283820-710b6159-d45a-43ef-b80a-c95561cd0780.png)
+
+![Screenshot (192)](https://user-images.githubusercontent.com/100140781/233283830-eb3ff0e9-049f-4745-8616-571304fd3cb4.png)
+
+
 
 
 This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
