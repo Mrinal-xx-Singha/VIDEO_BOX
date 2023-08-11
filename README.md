@@ -1,6 +1,6 @@
 # Getting Started with Create React App
-# **View Deployed Site**   
-(HOSTED)[https://main--remarkable-choux-7fefb8.netlify.app/]
+# **View Deployed Site**
+ [HOSTED](https://main--remarkable-choux-7fefb8.netlify.app/)
 
 **`SCREEN SHOTS`**
 ![Screenshot (194)](https://user-images.githubusercontent.com/100140781/233283699-3b0b778a-a9e0-4208-bec5-912c549c09c3.png)
