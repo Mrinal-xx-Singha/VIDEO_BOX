@@ -1,6 +1,7 @@
 
 # VIDEO BOX
-## LINK- [Youtube Clone App](https://main--remarkable-choux-7fefb8.netlify.app/)
+## LINK
+[VIDEOBOX](https://main--remarkable-choux-7fefb8.netlify.app/)
 
 Welcome to Video Box! This project is a simplified version of YouTube, where we fetch data from the YouTube Data API and display the results on the frontend using Axios.
 
@@ -16,6 +17,8 @@ I'm a aspiring  full stack developer...
 - Video Searching
 - Video Displaying 
 - Category wise video sorting
+- Recomended video on video play
+- video statistics like and view display 
 
 
 ## Tech Stack
