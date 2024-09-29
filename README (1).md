@@ -41,7 +41,12 @@ Deployed in Netlify
   npm start
 ```
 
+<<<<<<< HEAD
 ## Screenshots
+=======
+## ScreenShots
+
+>>>>>>> 261513748351cf744df5b5ac69e8fdbddfcdbc32
 ![Screenshot (194)](https://user-images.githubusercontent.com/100140781/233283699-3b0b778a-a9e0-4208-bec5-912c549c09c3.png)
 
 ![Screenshot (193)](https://user-images.githubusercontent.com/100140781/233283813-a236902d-6790-4147-882a-b487034c7571.png)
@@ -52,8 +57,11 @@ Deployed in Netlify
 
 
 
+<<<<<<< HEAD
 
 
+=======
+>>>>>>> 261513748351cf744df5b5ac69e8fdbddfcdbc32
 ## Installation
 
 This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
