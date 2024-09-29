@@ -46,13 +46,12 @@ Deployed in Netlify
 
 ## ScreenShots
 
-![Screenshot (194)](https://user-images.githubusercontent.com/100140781/233283699-3b0b778a-a9e0-4208-bec5-912c549c09c3.png)
+![Screenshot (289)](https://github.com/user-attachments/assets/8c09d9c2-fa8b-4d1d-b917-925b4564d25a)
+![Screenshot (290)](https://github.com/user-attachments/assets/7d3adc74-db59-4e18-84b4-bad86763afbc)
+![Screenshot (291)](https://github.com/user-attachments/assets/a3990eff-6ae3-4552-b907-1f1999b53acb)
 
-![Screenshot (193)](https://user-images.githubusercontent.com/100140781/233283813-a236902d-6790-4147-882a-b487034c7571.png)
 
-![Screenshot (190)](https://user-images.githubusercontent.com/100140781/233283820-710b6159-d45a-43ef-b80a-c95561cd0780.png)
 
-![Screenshot (192)](https://user-images.githubusercontent.com/100140781/233283830-eb3ff0e9-049f-4745-8616-571304fd3cb4.png)
 
 
 
