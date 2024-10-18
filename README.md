@@ -1,7 +1,7 @@
 
 # VIDEO BOX
 ## LINK
-[VIDEOBOX](https://main--remarkable-choux-7fefb8.netlify.app/)
+[VIDEOBOX](https://video-box-5msi.vercel.app/)
 
 Welcome to Video Box! This project is a simplified version of YouTube, where we fetch data from the YouTube Data API and display the results on the frontend using Axios.
 
@@ -12,6 +12,13 @@ I'm a aspiring  full stack developer...
 ## 🔗 Links
 [![portfolio](https://img.shields.io/badge/my_portfolio-000?style=for-the-badge&logo=ko-fi&logoColor=white)](https://mrinalspersonalportfolio.netlify.app//)
 [![linkedin](https://img.shields.io/badge/linkedin-0A66C2?style=for-the-badge&logo=linkedin&logoColor=white)](https://www.linkedin.com/in/mrinal-singha-754b57249/)
+
+## Updates
+- Integrated GEMINI API To dynamically fetch crypto data and display it in real time
+- added options to view most famous crypto crypto currencies
+- personalised video suggestions on selected crypto currency symbol
+
+
 ## Features
 
 - Video Searching
