@@ -42,7 +42,7 @@ const ChannelDetail = () => {
       <Box>
         <div
           style={{
-            background: 'linear-gradient(900deg, rgba(0,238,247,1) 0%, rgba(206,3,184,1) 100%, rgba(0,212,255,1) 100%)',
+            background: 'radial-gradient(circle, rgba(238,174,202,1) 0%, rgba(148,187,233,1) 100%)',
             zIndex: 10,
             height: '300px',
           }}

@@ -23,7 +23,7 @@ const Sidebar = ({ selectedCategory, setSelectedCategory }) => (
       >
         <span
           style={{
-            color: category.name === selectedCategory ? "white" : "red",
+            color: category.name === selectedCategory ? "white" : "white",
             marginRight: "15px",
           }}
         >

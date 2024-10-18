@@ -1,19 +1,26 @@
 import React, { useState, useEffect } from "react";
 import { Link, useParams } from "react-router-dom";
 import ReactPlayer from "react-player";
-import { Typography, Box, Stack } from "@mui/material";
-import { CheckCircle } from "@mui/icons-material";
-import { Videos } from "./";
+import { Typography, Box, Stack, CircularProgress } from "@mui/material";
+import { CheckCircle, ThumbUp, Visibility } from "@mui/icons-material";
+import { GeminiFeed, Videos } from "./";
 import { fetchFromAPI } from "./utils/fetchFromAPI";
-import { ThumbUp, Visibility } from "@mui/icons-material";
+import { fetchGeminiData } from "./utils/fetchFromGemini"; // Import the Gemini data fetch function
+import Skeleton from "@mui/material/Skeleton"; // For skeleton loading
+
 const VideoDetail = () => {
   const [videoDetail, setVideoDetail] = useState(null);
   const [videos, setVideos] = useState([]);
+  const [loading, setLoading] = useState(true); // Loading state
+  const [error, setError] = useState(null); // Error state
+  const [bitcoinPrice, setBitcoinPrice] = useState(null); // Crypto price state
 
   const { id } = useParams();
 
   useEffect(() => {
     const fetchVideoData = async () => {
+      setLoading(true);
+      setError(null);
       try {
         const videoData = await fetchFromAPI(
           `videos?part=snippet,statistics&id=${id}`
@@ -24,13 +31,36 @@ const VideoDetail = () => {
           `search?part=snippet&relatedToVideoId=${id}&type=video`
         );
         setVideos(relatedVideosData.items);
+
+        // Fetch Bitcoin price from Gemini API
+        const bitcoinData = await fetchGeminiData("btcusd");
+        setBitcoinPrice(bitcoinData.last); // Set the latest price
       } catch (error) {
-        console.error("Error fetching video details:", error);
+        setError("Failed to load video details. Please try again later.");
+      } finally {
+        setLoading(false);
       }
     };
 
     fetchVideoData();
   }, [id]);
+
+  // Loading or Error States
+  if (loading) {
+    return (
+      <Box minHeight="95vh" p={2} display="flex" justifyContent="center" alignItems="center">
+        <CircularProgress color="inherit" />
+      </Box>
+    );
+  }
+
+  if (error) {
+    return (
+      <Typography color="error" fontSize="2rem" textAlign="center" minHeight="100vh">
+        {error}
+      </Typography>
+    );
+  }
 
   if (!videoDetail?.snippet)
     return (
@@ -64,6 +94,7 @@ const VideoDetail = () => {
               controls
             />
           </Box>
+
           {/* Video Title */}
           <Typography
             color="#fff"
@@ -152,6 +183,17 @@ const VideoDetail = () => {
               </Stack>
             </Stack>
           </Stack>
+
+          {/* Gemini API: Bitcoin Price Section */}
+          <Box sx={{ backgroundColor: "#1c1c1c", padding: "16px", marginTop: "16px", borderRadius: "8px" }}>
+            <Typography variant="h6" color="#fff" fontWeight="bold">
+              Current Bitcoin Price (USD)
+            </Typography>
+            <Typography variant="h4" color="rgb(252, 21, 3)" fontWeight="bold">
+              ${bitcoinPrice}
+            </Typography>
+          </Box>
+            <GeminiFeed />
         </Box>
 
         {/* Related Videos Section */}
@@ -161,7 +203,11 @@ const VideoDetail = () => {
           justifyContent="center"
           alignItems="center"
         >
-          <Videos videos={videos} direction="column" />
+          {loading ? (
+            <Skeleton variant="rectangular" width="100%" height={300} />
+          ) : (
+            <Videos videos={videos} direction="column" />
+          )}
         </Box>
       </Stack>
     </Box>

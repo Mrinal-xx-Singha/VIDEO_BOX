@@ -10,13 +10,22 @@
   --button-hover-color: #FC1503;
   --scrollbar-thumb-color: rgb(114, 113, 113);
   --scrollbar-track-color: transparent;
+  --btn-padding: 7px 15px;
+  --btn-border-radius: 20px;
+  --scrollbar-width: 8px;
 }
 
 /* Basic Styles */
-body {
+* {
   margin: 0;
   padding: 0;
   box-sizing: border-box;
+}
+
+body {
+  font-family: "Roboto", sans-serif;
+  background-color: #f5f5f5;
+  color: var(--font-color);
 }
 
 a {
@@ -26,7 +35,7 @@ a {
 
 /* Custom Scrollbar */
 ::-webkit-scrollbar {
-  width: 8px; /* Increased width for visibility */
+  width: var(--scrollbar-width); /* Increased width for visibility */
 }
 
 ::-webkit-scrollbar-thumb {
@@ -48,10 +57,10 @@ a {
   cursor: pointer;
   background: transparent;
   border: none;
-  padding: 7px 15px;
+  padding: var(--btn-padding);
   margin: 10px 0;
-  border-radius: 20px;
-  transition: background-color 0.3s ease, color 0.3s ease; /* Added transition */
+  border-radius: var(--btn-border-radius);
+  transition: background-color 0.3s ease, color 0.3s ease; /* Smooth transition */
 }
 
 .category-btn:hover {
@@ -63,35 +72,50 @@ a {
   color: white;
 }
 
-/* React Player Styles */
-
+/* Search Bar Styles */
 .search-bar {
-  border: none;
+  border: 1px solid #e0e0e0;
   outline: none;
-  width: 350px;
+  padding: 8px;
+  border-radius: 10px;
+  width: 100%;
+  max-width: 350px; /* Maximum width for larger screens */
+  transition: width 0.3s ease; /* Smooth transition for width change */
 }
 
-/* Media Queries */
 @media screen and (max-width: 900px) {
   .category-btn {
-    margin: 10px; /* Consistent margin */
-  }
-}
-
-@media screen and (max-width: 800px) {
-  .copyright {
-    display: none !important;
+    margin: 8px; /* Reduced margin for smaller screens */
+    padding: 6px 12px; /* Adjusted padding */
   }
 }
 
 @media screen and (max-width: 600px) {
   .scroll-horizontal {
-    overflow: auto !important; /* Ensure horizontal scrolling */
+    overflow-x: auto; /* Ensure horizontal scrolling */
+    white-space: nowrap;
   }
 
-  
-
   .search-bar {
-    width: 200px; /* Adjust width for smaller screens */
+    width: 90%; /* Responsive width for smaller screens */
+    max-width: 250px; /* Limit maximum width */
+  }
+}
+
+@media screen and (max-width: 400px) {
+  .search-bar {
+    width: 80%; /* Smaller width for very small screens */
+  }
+
+  .category-btn {
+    padding: 5px 10px; /* Smaller padding */
+    font-size: 14px; /* Smaller text */
+  }
+}
+
+/* Copyright hide on small screens */
+@media screen and (max-width: 800px) {
+  .copyright {
+    display: none !important;
   }
 }

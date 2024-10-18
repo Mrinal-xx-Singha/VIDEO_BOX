@@ -1,10 +1,10 @@
-import React, { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
-import { Paper, IconButton, TextField } from '@mui/material';
-import { Search } from '@mui/icons-material';
+import React, { useState } from "react";
+import { useNavigate } from "react-router-dom";
+import { Paper, IconButton, TextField } from "@mui/material";
+import { Search } from "@mui/icons-material";
 
 const SearchBar = () => {
-  const [searchTerm, setSearchTerm] = useState('');
+  const [searchTerm, setSearchTerm] = useState("");
   const navigate = useNavigate();
 
   const handleSubmit = (e) => {
@@ -12,7 +12,7 @@ const SearchBar = () => {
     const trimmedTerm = searchTerm.trim();
     if (trimmedTerm) {
       navigate(`/search/${trimmedTerm}`);
-      setSearchTerm(''); // Clear the search input after submitting
+      setSearchTerm(""); // Clear the search input after submitting
     }
   };
 
@@ -21,16 +21,16 @@ const SearchBar = () => {
       component="form"
       onSubmit={handleSubmit}
       sx={{
-        borderRadius: 20,
-        border: '1px solid #e3e3e3',
+        borderRadius: "20px",
+        border: "1px solid #e3e3e3",
+        display: "flex",
+        alignItems: "center",
+        width: { xs: "100%", sm: "400px", md: "500px" }, // Responsive width scaling from mobile to desktop
+        height: { xs: "38px", sm: "50px" }, // Adjust height for different screen sizes
+        boxShadow: "none",
         pl: 2,
         pr: 2,
-        boxShadow: 'none',
-        display: 'flex',
-        alignItems: 'center',
-        mr: { sm: 4, xs: 2 },
-        width: { xs: '250px', sm: '400px' }, // Responsive width
-        height: '40px', // Consistent height for better UX
+        backgroundColor: "#fff", // Set background color for better visibility
       }}
     >
       <TextField
@@ -41,17 +41,26 @@ const SearchBar = () => {
         InputProps={{
           disableUnderline: true,
           sx: {
-            fontSize: '16px', // Improve font size for better readability
+            fontSize: { xs: "12px", sm: "14px" }, // Responsive font size
           },
         }}
         fullWidth
         aria-label="search field"
         inputProps={{
-          style: { padding: '0 8px' }, // Add padding to improve text readability
+          style: {
+            padding: "0 5px", // Added padding inside the text input for better spacing
+          },
         }}
       />
-      <IconButton type="submit" sx={{ p: '5px', color: 'red' }} aria-label="search">
-        <Search />
+      <IconButton
+        type="submit"
+        sx={{
+          p: { xs: "5px", sm: "10px" }, // Increased padding for larger touch target
+          color: "red",
+        }}
+        aria-label="search"
+      >
+        <Search sx={{ fontSize: { xs: "20px", sm: "24px" } }} /> {/* Responsive icon size */}
       </IconButton>
     </Paper>
   );
