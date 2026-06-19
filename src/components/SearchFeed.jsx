@@ -11,10 +11,10 @@ const SearchFeed = () => {
 
   useEffect(() => {
     setLoading(true); // Start loading
-    fetchFromAPI(`search?part=snippet&q=${searchTerm}`)
+    fetchFromAPI(`search?query=${searchTerm}`)
       .then((data) => {
         console.log("Fetched data:", data); // Debugging: log the fetched data
-        setVideos(data.items || []); // Safeguard in case `data.items` is undefined
+        setVideos(data.contents || []); // Safeguard in case `data.contents` is undefined
         setLoading(false); // End loading
       })
       .catch((error) => {

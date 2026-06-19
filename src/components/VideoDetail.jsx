@@ -23,14 +23,17 @@ const VideoDetail = () => {
       setError(null);
       try {
         const videoData = await fetchFromAPI(
-          `videos?part=snippet,statistics&id=${id}`
+          `video?id=${id}`
         );
-        setVideoDetail(videoData.items[0]);
+        setVideoDetail(videoData.videoDetails);
 
-        const relatedVideosData = await fetchFromAPI(
-          `search?part=snippet&relatedToVideoId=${id}&type=video`
-        );
-        setVideos(relatedVideosData.items);
+        console.log("Video Details", videoData)
+
+        // const relatedVideosData = await fetchFromAPI(
+        //   `video/related/id=${id}`
+        // );
+        // console.log(relatedVideosData)
+        // setVideos(relatedVideosData);
 
         // Fetch Bitcoin price from Gemini API
         const bitcoinData = await fetchGeminiData("btcusd");
@@ -62,7 +65,9 @@ const VideoDetail = () => {
     );
   }
 
-  if (!videoDetail?.snippet)
+
+
+  if (!videoDetail)
     return (
       <Typography
         color="#fff"
@@ -75,8 +80,11 @@ const VideoDetail = () => {
     );
 
   const {
-    snippet: { title, channelId, channelTitle },
-    statistics: { viewCount, likeCount },
+    title,
+    channelId,
+    author,
+    viewCount,
+    likeCount,
   } = videoDetail;
 
   return (
@@ -128,7 +136,7 @@ const VideoDetail = () => {
                   boxShadow: "0 4px 12px rgba(0,0,0,0.1)",
                 }}
               >
-                {channelTitle}
+                {author}
                 <CheckCircle
                   sx={{
                     fontSize: { xs: "14px", md: "20px" },
@@ -178,11 +186,33 @@ const VideoDetail = () => {
                     fontSize: { xs: "10px", md: "16px" }, // Adjust font size for small/large screens
                   }}
                 >
-                  {parseInt(likeCount).toLocaleString()} likes
+                  {likeCount ? parseInt(likeCount).toLocaleString() : "N/A"} likes
                 </Typography>
               </Stack>
             </Stack>
           </Stack>
+          <Box
+            sx={{
+              backgroundColor: "#1c1c1c",
+              p: 2,
+              mt: 2,
+              borderRadius: 2,
+            }}
+          >
+            <Typography color="#fff" fontWeight="bold">
+              Description
+            </Typography>
+
+            <Typography
+              color="#aaa"
+              sx={{
+                whiteSpace: "pre-wrap",
+                mt: 1,
+              }}
+            >
+              {videoDetail.shortDescription}
+            </Typography>
+          </Box>
 
           {/* Gemini API: Bitcoin Price Section */}
           <Box sx={{ backgroundColor: "#1c1c1c", padding: "16px", marginTop: "16px", borderRadius: "8px" }}>
@@ -193,11 +223,11 @@ const VideoDetail = () => {
               ${bitcoinPrice}
             </Typography>
           </Box>
-            <GeminiFeed />
+          <GeminiFeed />
         </Box>
 
         {/* Related Videos Section */}
-        <Box
+        {/* <Box
           px={2}
           py={{ md: 1, xs: 5 }}
           justifyContent="center"
@@ -208,7 +238,7 @@ const VideoDetail = () => {
           ) : (
             <Videos videos={videos} direction="column" />
           )}
-        </Box>
+        </Box> */}
       </Stack>
     </Box>
   );

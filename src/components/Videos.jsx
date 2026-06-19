@@ -1,6 +1,6 @@
 import React from "react";
 import { Box, Stack, Typography } from "@mui/material";
-import { VideoCard, ChannelCard } from "./";
+import { VideoCard } from "./";
 
 const Videos = ({ videos, direction = "row" }) => {
   if (!videos?.length) {
@@ -9,9 +9,8 @@ const Videos = ({ videos, direction = "row" }) => {
         color="#fff"
         variant="h6"
         textAlign="center"
-        minHeight="100vh"
       >
-        Loading...
+        No videos found
       </Typography>
     );
   }
@@ -21,21 +20,15 @@ const Videos = ({ videos, direction = "row" }) => {
       direction={direction}
       flexWrap="wrap"
       justifyContent="center"
-      alignItems="start"
       gap={2}
     >
-      {videos.map((item, index) => {
-        // Safeguard checks for nested properties
-        const videoId = item?.id?.videoId;
-        const channelId = item?.id?.channelId;
-
-        return (
-          <Box key={videoId || channelId || index}>
-            {videoId && <VideoCard video={item} />}
-            {channelId && <ChannelCard channelDetail={item} />}
-          </Box>
-        );
-      })}
+      {videos.filter((item)=>item.video).map((item, index) => (
+        <Box
+          key={item?.video?.videoId || index}
+        >
+          <VideoCard video={item} />
+        </Box>
+      ))}
     </Stack>
   );
 };

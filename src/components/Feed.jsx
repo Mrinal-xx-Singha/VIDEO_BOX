@@ -17,9 +17,9 @@ const Feed = () => {
       setError(null); // Reset error
       try {
         const data = await fetchFromAPI(
-          `search?part=snippet&q=${selectedCategory}`
+          `search?query=${selectedCategory}`
         );
-        setVideos(data.items);
+        setVideos(data.contents);
       } catch (err) {
         setError("Failed to fetch videos."); // Handle API errors
       } finally {
