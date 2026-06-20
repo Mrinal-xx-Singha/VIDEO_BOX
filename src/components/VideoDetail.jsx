@@ -29,11 +29,11 @@ const VideoDetail = () => {
 
         console.log("Video Details", videoData)
 
-        // const relatedVideosData = await fetchFromAPI(
-        //   `video/related/id=${id}`
-        // );
-        // console.log(relatedVideosData)
-        // setVideos(relatedVideosData);
+        const relatedVideosData = await fetchFromAPI(
+          `video/related?id=${id}`
+        );
+        console.log(relatedVideosData.contents)
+        setVideos(relatedVideosData.contents.slice(0,10) || []);
 
         // Fetch Bitcoin price from Gemini API
         const bitcoinData = await fetchGeminiData("btcusd");
@@ -100,6 +100,7 @@ const VideoDetail = () => {
               height="100%"
               style={{ position: "absolute", top: 0, left: 0 }}
               controls
+              volume={1}
             />
           </Box>
 
@@ -122,7 +123,7 @@ const VideoDetail = () => {
           >
             <Link to={`/channel/${channelId}`}>
               <Typography
-                variant={{ sm: "subtitle1", md: "h6" }}
+                variant="subtitle1"
                 color="#fff"
                 fontWeight="bold"
                 sx={{
@@ -227,7 +228,7 @@ const VideoDetail = () => {
         </Box>
 
         {/* Related Videos Section */}
-        {/* <Box
+        <Box
           px={2}
           py={{ md: 1, xs: 5 }}
           justifyContent="center"
@@ -238,7 +239,7 @@ const VideoDetail = () => {
           ) : (
             <Videos videos={videos} direction="column" />
           )}
-        </Box> */}
+        </Box>
       </Stack>
     </Box>
   );

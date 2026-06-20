@@ -36,12 +36,12 @@ const GeminiFeed = () => {
 
       // Fetch YouTube videos related to the selected cryptocurrency
       const videoData = await fetchFromAPI(
-        `search?part=snippet&q=${cryptoSymbol.replace(
+        `search?query=${cryptoSymbol.replace(
           "usd",
           ""
         )}%20news&maxResults=5`
       );
-      setVideos(videoData.items);
+      setVideos(videoData.contents.slice(0,6));
       setLoading(false);
     } catch (err) {
       setError("Failed to load data");

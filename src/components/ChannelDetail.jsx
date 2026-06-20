@@ -14,11 +14,12 @@ const ChannelDetail = () => {
   useEffect(() => {
     const fetchResults = async () => {
       try {
-        const channelData = await fetchFromAPI(`channels?part=snippet&id=${id}`);
-        setChannelDetail(channelData?.items[0]);
+        const channelData = await fetchFromAPI(`channel?id=${id}`);
 
-        const videosData = await fetchFromAPI(`search?channelId=${id}&part=snippet,id&order=date`);
-        setVideos(videosData?.items);
+        console.log(channelData)
+        setChannelDetail(channelData);
+
+        setVideos(channelData.contents?.filter((item)=>item.video ) || []);
       } catch (error) {
         console.error("Error fetching data:", error);
       } finally {
