@@ -1,44 +1,59 @@
-import React, { useState, useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import { Link, useParams } from "react-router-dom";
 import ReactPlayer from "react-player";
-import { Typography, Box, Stack, CircularProgress } from "@mui/material";
-import { CheckCircle, ThumbUp, Visibility } from "@mui/icons-material";
-import { GeminiFeed, Videos } from "./";
+import {
+  Avatar,
+  Box,
+  Button,
+  Chip,
+  CircularProgress,
+  Stack,
+  Typography,
+} from "@mui/material";
+import {
+  CheckCircle,
+  ThumbUpOutlined,
+  VisibilityOutlined,
+  SmartToyOutlined,
+} from "@mui/icons-material";
+
+import { Videos } from "./";
 import { fetchFromAPI } from "./utils/fetchFromAPI";
-import { fetchGeminiData } from "./utils/fetchFromGemini"; // Import the Gemini data fetch function
-import Skeleton from "@mui/material/Skeleton"; // For skeleton loading
+import { fetchGeminiData } from "./utils/fetchFromGemini";
+
+const formatCount = (value, suffix) => {
+  if (!value) return `N/A ${suffix}`;
+
+  const numericValue = Number(value);
+  if (Number.isNaN(numericValue)) return `${value} ${suffix}`;
+
+  return `${numericValue.toLocaleString()} ${suffix}`;
+};
 
 const VideoDetail = () => {
   const [videoDetail, setVideoDetail] = useState(null);
   const [videos, setVideos] = useState([]);
-  const [loading, setLoading] = useState(true); // Loading state
-  const [error, setError] = useState(null); // Error state
-  const [bitcoinPrice, setBitcoinPrice] = useState(null); // Crypto price state
-
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
+  const [bitcoinPrice, setBitcoinPrice] = useState(null);
+  const [showDescription, setShowDescription] = useState(false);
   const { id } = useParams();
 
   useEffect(() => {
     const fetchVideoData = async () => {
       setLoading(true);
       setError(null);
+
       try {
-        const videoData = await fetchFromAPI(
-          `video?id=${id}`
-        );
+        const videoData = await fetchFromAPI(`video?id=${id}`);
         setVideoDetail(videoData.videoDetails);
 
-        console.log("Video Details", videoData)
+        const relatedVideosData = await fetchFromAPI(`video/related?id=${id}`);
+        setVideos(relatedVideosData.contents?.slice(0, 12) || []);
 
-        const relatedVideosData = await fetchFromAPI(
-          `video/related?id=${id}`
-        );
-        console.log(relatedVideosData.contents)
-        setVideos(relatedVideosData.contents.slice(0,10) || []);
-
-        // Fetch Bitcoin price from Gemini API
         const bitcoinData = await fetchGeminiData("btcusd");
-        setBitcoinPrice(bitcoinData.last); // Set the latest price
-      } catch (error) {
+        setBitcoinPrice(bitcoinData?.last || null);
+      } catch (fetchError) {
         setError("Failed to load video details. Please try again later.");
       } finally {
         setLoading(false);
@@ -48,200 +63,234 @@ const VideoDetail = () => {
     fetchVideoData();
   }, [id]);
 
-  // Loading or Error States
   if (loading) {
     return (
-      <Box minHeight="95vh" p={2} display="flex" justifyContent="center" alignItems="center">
-        <CircularProgress color="inherit" />
+      <Box minHeight="70vh" display="flex" justifyContent="center" alignItems="center">
+        <CircularProgress sx={{ color: "var(--brand)" }} />
       </Box>
     );
   }
 
   if (error) {
     return (
-      <Typography color="error" fontSize="2rem" textAlign="center" minHeight="100vh">
+      <Typography color="#ff8a80" textAlign="center" minHeight="70vh" pt={10}>
         {error}
       </Typography>
     );
   }
 
-
-
-  if (!videoDetail)
+  if (!videoDetail) {
     return (
-      <Typography
-        color="#fff"
-        height="100vh"
-        textAlign="center"
-        fontSize="2rem"
-      >
-        Loading...
+      <Typography color="var(--text-secondary)" textAlign="center" minHeight="70vh" pt={10}>
+        Video unavailable.
       </Typography>
     );
+  }
 
-  const {
-    title,
-    channelId,
-    author,
-    viewCount,
-    likeCount,
-  } = videoDetail;
+  const { title, channelId, author, viewCount, likeCount, shortDescription } = videoDetail;
 
   return (
-    <Box minHeight="95vh" p={2}>
-      <Stack direction={{ xs: "column", md: "row" }} spacing={2}>
-        {/* Video Player Section */}
-        <Box flex={1}>
-          <Box sx={{ position: "relative", paddingTop: "56.25%" }}>
-            <ReactPlayer
-              url={`https://www.youtube.com/watch?v=${id}`}
-              className="react-player"
-              width="100%"
-              height="100%"
-              style={{ position: "absolute", top: 0, left: 0 }}
-              controls
-              volume={1}
-            />
-          </Box>
-
-          {/* Video Title */}
-          <Typography
-            color="#fff"
-            variant="h5"
-            fontWeight="bold"
-            p={2}
-            sx={{ marginTop: 2 }}
-          >
-            {title}
-          </Typography>
-
-          {/* Video Details (Channel and Stats) */}
-          <Stack
-            direction="row"
-            justifyContent="space-between"
-            sx={{ color: "#fff", paddingX: 2, marginBottom: 2 }}
-          >
-            <Link to={`/channel/${channelId}`}>
-              <Typography
-                variant="subtitle1"
-                color="#fff"
-                fontWeight="bold"
-                sx={{
-                  display: "flex",
-                  alignItems: "center",
-                  backgroundColor: "rgb(252, 21, 3)",
-                  gap: "10px",
-                  paddingX: { xs: "12px", md: "24px" },
-                  paddingY: { xs: "8px", md: "16px" },
-                  borderRadius: { xs: "16px", sm: "18px", md: "20px" },
-                  boxShadow: "0 4px 12px rgba(0,0,0,0.1)",
-                }}
-              >
-                {author}
-                <CheckCircle
-                  sx={{
-                    fontSize: { xs: "14px", md: "20px" },
-                    color: "gray",
-                    marginLeft: "5px",
-                  }}
-                />
-              </Typography>
-            </Link>
-
-            <Stack
-              direction="row"
-              gap={{ xs: "10px", md: "20px" }}
-              alignItems="center"
-            >
-              {/* Views Section */}
-              <Stack direction="row" alignItems="center" gap="5px">
-                <Visibility
-                  sx={{
-                    fontSize: { xs: "16px", md: "20px" }, // Responsive font size
-                    color: "gray",
-                  }}
-                />
-                <Typography
-                  variant="body1"
-                  sx={{
-                    opacity: 0.7,
-                    fontSize: { xs: "10px", md: "16px" }, // Adjust font size for small/large screens
-                  }}
-                >
-                  {parseInt(viewCount).toLocaleString()} views
-                </Typography>
-              </Stack>
-
-              {/* Likes Section */}
-              <Stack direction="row" alignItems="center" gap="5px">
-                <ThumbUp
-                  sx={{
-                    fontSize: { xs: "12px", md: "20px" }, // Responsive font size
-                    color: "gray",
-                  }}
-                />
-                <Typography
-                  variant="body1"
-                  sx={{
-                    opacity: 0.7,
-                    fontSize: { xs: "10px", md: "16px" }, // Adjust font size for small/large screens
-                  }}
-                >
-                  {likeCount ? parseInt(likeCount).toLocaleString() : "N/A"} likes
-                </Typography>
-              </Stack>
-            </Stack>
-          </Stack>
+    <Stack direction={{ xs: "column", xl: "row" }} spacing={{ xs: 3, xl: 2.5 }} alignItems="flex-start">
+      <Box sx={{ flex: 1, minWidth: 0 }}>
+        <Stack spacing={2}>
           <Box
             sx={{
-              backgroundColor: "#1c1c1c",
-              p: 2,
-              mt: 2,
-              borderRadius: 2,
+              borderRadius: { xs: 0, sm: 3 },
+              overflow: "hidden",
+              backgroundColor: "#000",
             }}
           >
-            <Typography color="#fff" fontWeight="bold">
-              Description
+            <Box sx={{ position: "relative", paddingTop: "56.25%" }}>
+              <ReactPlayer
+                url={`https://www.youtube.com/watch?v=${id}`}
+                width="100%"
+                height="100%"
+                style={{ position: "absolute", top: 0, left: 0 }}
+                controls
+              />
+            </Box>
+          </Box>
+
+          <Box>
+            <Typography
+              variant="h4"
+              sx={{ fontSize: { xs: "1.3rem", md: "1.6rem" }, fontWeight: 700, lineHeight: 1.32 }}
+            >
+              {title}
             </Typography>
 
+            <Stack
+              direction={{ xs: "column", md: "row" }}
+              justifyContent="space-between"
+              spacing={2}
+              mt={2}
+            >
+              <Stack direction="row" spacing={1.5} alignItems="center" minWidth={0}>
+                <Avatar
+                  sx={{
+                    width: 44,
+                    height: 44,
+                    bgcolor: "var(--bg-accent)",
+                    color: "#fff",
+                    fontWeight: 700,
+                    flexShrink: 0,
+                  }}
+                >
+                  {(author || "V").slice(0, 1)}
+                </Avatar>
+
+                <Box sx={{ minWidth: 0 }}>
+                  <Link to={`/channel/${channelId}`}>
+                    <Stack direction="row" spacing={0.8} alignItems="center">
+                      <Typography
+                        className="line-clamp-2"
+                        sx={{ fontWeight: 700, fontSize: "0.98rem" }}
+                      >
+                        {author}
+                      </Typography>
+                      <CheckCircle sx={{ fontSize: 15, color: "var(--text-secondary)", flexShrink: 0 }} />
+                    </Stack>
+                  </Link>
+                  <Typography sx={{ color: "var(--text-secondary)", mt: 0.35, fontSize: "0.84rem" }}>
+                    Channel
+                  </Typography>
+                </Box>
+
+                <Button
+                  sx={{
+                    ml: { xs: 0, md: 1 },
+                    borderRadius: "999px",
+                    px: 2.2,
+                    py: 0.9,
+                    bgcolor: "#fff",
+                    color: "#0f0f0f",
+                    textTransform: "none",
+                    fontWeight: 700,
+                    whiteSpace: "nowrap",
+                    "&:hover": {
+                      bgcolor: "#f1f1f1",
+                    },
+                  }}
+                >
+                  Subscribe
+                </Button>
+              </Stack>
+
+              <Stack direction="row" spacing={1} flexWrap="wrap" useFlexGap>
+                <Chip
+                  icon={<VisibilityOutlined sx={{ color: "inherit !important" }} />}
+                  label={formatCount(viewCount, "views")}
+                  sx={{
+                    bgcolor: "var(--bg-accent)",
+                    color: "var(--text-primary)",
+                    borderRadius: "999px",
+                  }}
+                />
+                <Chip
+                  icon={<ThumbUpOutlined sx={{ color: "inherit !important" }} />}
+                  label={formatCount(likeCount, "likes")}
+                  sx={{
+                    bgcolor: "var(--bg-accent)",
+                    color: "var(--text-primary)",
+                    borderRadius: "999px",
+                  }}
+                />
+              </Stack>
+            </Stack>
+          </Box>
+
+          <Box
+            sx={{
+              p: { xs: 1.75, md: 2 },
+              borderRadius: 3,
+              backgroundColor: "var(--bg-elevated)",
+            }}
+          >
+            <Typography sx={{ fontWeight: 700, mb: 1.1 }}>Description</Typography>
             <Typography
-              color="#aaa"
               sx={{
+                color: "var(--text-secondary)",
                 whiteSpace: "pre-wrap",
-                mt: 1,
+                lineHeight: 1.65,
+                display: "-webkit-box",
+                overflow: "hidden",
+                WebkitBoxOrient: "vertical",
+                WebkitLineClamp: showDescription ? "unset" : 4,
               }}
             >
-              {videoDetail.shortDescription}
+              {shortDescription || "No description was provided for this video."}
             </Typography>
+            {shortDescription && shortDescription.length > 220 && (
+              <Button
+                onClick={() => setShowDescription((previous) => !previous)}
+                sx={{
+                  mt: 1.2,
+                  px: 0,
+                  minWidth: "auto",
+                  color: "#3ea6ff",
+                  textTransform: "none",
+                  fontWeight: 700,
+                }}
+              >
+                {showDescription ? "Show less" : "Show more"}
+              </Button>
+            )}
           </Box>
 
-          {/* Gemini API: Bitcoin Price Section */}
-          <Box sx={{ backgroundColor: "#1c1c1c", padding: "16px", marginTop: "16px", borderRadius: "8px" }}>
-            <Typography variant="h6" color="#fff" fontWeight="bold">
-              Current Bitcoin Price (USD)
-            </Typography>
-            <Typography variant="h4" color="rgb(252, 21, 3)" fontWeight="bold">
-              ${bitcoinPrice}
-            </Typography>
-          </Box>
-          <GeminiFeed />
-        </Box>
+          <Box
+            sx={{
+              p: { xs: 1.75, md: 2 },
+              borderRadius: 3,
+              backgroundColor: "var(--bg-elevated)",
+            }}
+          >
+            <Stack direction={{ xs: "column", sm: "row" }} spacing={1.5} justifyContent="space-between">
+              <Box>
+                <Stack direction="row" spacing={1} alignItems="center">
+                  <SmartToyOutlined sx={{ color: "var(--text-secondary)", fontSize: 20 }} />
+                  <Typography sx={{ fontWeight: 700 }}>Crypto AI snapshot</Typography>
+                </Stack>
+                <Typography sx={{ color: "var(--text-secondary)", mt: 0.8, lineHeight: 1.6 }}>
+                  BTC price while you watch.
+                </Typography>
+              </Box>
 
-        {/* Related Videos Section */}
-        <Box
-          px={2}
-          py={{ md: 1, xs: 5 }}
-          justifyContent="center"
-          alignItems="center"
-        >
-          {loading ? (
-            <Skeleton variant="rectangular" width="100%" height={300} />
-          ) : (
-            <Videos videos={videos} direction="column" />
-          )}
+              <Stack alignItems={{ xs: "flex-start", sm: "flex-end" }} spacing={0.75}>
+                <Typography sx={{ color: "var(--text-secondary)", fontSize: "0.82rem" }}>
+                  BTC / USD
+                </Typography>
+                <Typography sx={{ fontSize: { xs: "1.35rem", md: "1.6rem" }, fontWeight: 700 }}>
+                  {bitcoinPrice ? `$${bitcoinPrice}` : "Unavailable"}
+                </Typography>
+                <Link to="/ai">
+                  <Button
+                    sx={{
+                      borderRadius: "999px",
+                      px: 2,
+                      py: 0.8,
+                      backgroundColor: "var(--bg-accent)",
+                      color: "#fff",
+                      textTransform: "none",
+                    }}
+                  >
+                    Open dashboard
+                  </Button>
+                </Link>
+              </Stack>
+            </Stack>
+          </Box>
+        </Stack>
+      </Box>
+
+      <Box sx={{ width: { xs: "100%", xl: 380 }, flexShrink: 0 }}>
+        <Box>
+          <Typography sx={{ color: "var(--text-secondary)", fontSize: "0.82rem", mb: 0.5 }}>
+            Up next
+          </Typography>
+          <Videos videos={videos} direction="column" />
         </Box>
-      </Stack>
-    </Box>
+      </Box>
+    </Stack>
   );
 };
 

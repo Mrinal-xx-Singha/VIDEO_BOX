@@ -1,38 +1,55 @@
-import React, { useState, useEffect } from "react";
-import { Box, Typography } from "@mui/material";
+import React, { useEffect, useState } from "react";
+import { Box, CircularProgress, Typography } from "@mui/material";
+import { useParams } from "react-router-dom";
+
 import { fetchFromAPI } from "./utils/fetchFromAPI";
 import { Videos } from "./";
-import { useParams } from "react-router-dom";
 
 const SearchFeed = () => {
   const [videos, setVideos] = useState([]);
-  const [loading, setLoading] = useState(true); // Loading state
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
   const { searchTerm } = useParams();
 
   useEffect(() => {
-    setLoading(true); // Start loading
-    fetchFromAPI(`search?query=${searchTerm}`)
-      .then((data) => {
-        console.log("Fetched data:", data); // Debugging: log the fetched data
-        setVideos(data.contents || []); // Safeguard in case `data.contents` is undefined
-        setLoading(false); // End loading
-      })
-      .catch((error) => {
-        console.error("Error fetching videos:", error);
-        setLoading(false); // End loading in case of error
-      });
+    const loadResults = async () => {
+      setLoading(true);
+      setError(null);
+
+      try {
+        const data = await fetchFromAPI(`search?query=${searchTerm}`);
+        setVideos(data.contents || []);
+      } catch (err) {
+        setError("Unable to load search results right now.");
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    loadResults();
   }, [searchTerm]);
 
   return (
-    <Box p={2} sx={{ overflowY: "auto", height: "90vh", flex: 2 }}>
-      <Typography variant="h4" fontWeight="bold" mb={2} sx={{ color: "white" }}>
-        Search Results for:{" "}
-        <span style={{ color: "#F31503" }}>{searchTerm}</span> videos
-      </Typography>
+    <Box>
+      <Box sx={{ px: { xs: 0.5, md: 1 }, pb: 2 }}>
+        <Typography sx={{ color: "var(--text-secondary)", fontSize: "0.82rem", mb: 0.5 }}>
+          Search results
+        </Typography>
+        <Typography
+          variant="h4"
+          sx={{ fontSize: { xs: "1.45rem", md: "1.9rem" }, fontWeight: 700, letterSpacing: "-0.02em" }}
+        >
+          {searchTerm}
+        </Typography>
+      </Box>
 
       {loading ? (
-        <Typography variant="h6" color="white" textAlign="center">
-          Loading...
+        <Box display="flex" justifyContent="center" alignItems="center" minHeight="45vh">
+          <CircularProgress sx={{ color: "var(--brand)" }} />
+        </Box>
+      ) : error ? (
+        <Typography sx={{ color: "#ff8a80", py: 6, textAlign: "center" }}>
+          {error}
         </Typography>
       ) : (
         <Videos videos={videos} />

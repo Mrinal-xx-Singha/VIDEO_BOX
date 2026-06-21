@@ -1,18 +1,19 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { Paper, IconButton, TextField } from "@mui/material";
-import { Search } from "@mui/icons-material";
+import { Box, IconButton, Paper } from "@mui/material";
+import { Search, KeyboardVoiceOutlined } from "@mui/icons-material";
 
 const SearchBar = () => {
   const [searchTerm, setSearchTerm] = useState("");
   const navigate = useNavigate();
 
-  const handleSubmit = (e) => {
-    e.preventDefault();
+  const handleSubmit = (event) => {
+    event.preventDefault();
     const trimmedTerm = searchTerm.trim();
+
     if (trimmedTerm) {
       navigate(`/search/${trimmedTerm}`);
-      setSearchTerm(""); // Clear the search input after submitting
+      setSearchTerm("");
     }
   };
 
@@ -20,47 +21,68 @@ const SearchBar = () => {
     <Paper
       component="form"
       onSubmit={handleSubmit}
+      elevation={0}
       sx={{
-        borderRadius: "20px",
-        border: "1px solid #e3e3e3",
+        width: "min(640px, 100%)",
+        height: 44,
+        borderRadius: "999px",
         display: "flex",
         alignItems: "center",
-        width: { xs: "100%", sm: "400px", md: "500px" }, // Responsive width scaling from mobile to desktop
-        height: { xs: "38px", sm: "50px" }, // Adjust height for different screen sizes
-        boxShadow: "none",
-        pl: 2,
-        pr: 2,
-        backgroundColor: "#fff", // Set background color for better visibility
+        backgroundColor: "#121212",
+        border: "1px solid #303030",
+        overflow: "hidden",
       }}
     >
-      <TextField
-        variant="standard"
-        placeholder="Search..."
+      <Box
+        component="input"
         value={searchTerm}
-        onChange={(e) => setSearchTerm(e.target.value)}
-        InputProps={{
-          disableUnderline: true,
-          sx: {
-            fontSize: { xs: "12px", sm: "14px" }, // Responsive font size
-          },
-        }}
-        fullWidth
-        aria-label="search field"
-        inputProps={{
-          style: {
-            padding: "0 5px", // Added padding inside the text input for better spacing
+        onChange={(event) => setSearchTerm(event.target.value)}
+        placeholder="Search"
+        aria-label="Search videos"
+        sx={{
+          flex: 1,
+          height: "100%",
+          border: "none",
+          outline: "none",
+          background: "transparent",
+          color: "var(--text-primary)",
+          px: 2,
+          fontSize: "0.95rem",
+          minWidth: 0,
+          "&::placeholder": {
+            color: "var(--text-secondary)",
+            opacity: 1,
           },
         }}
       />
+
+      <IconButton
+        aria-label="voice search"
+        sx={{
+          color: "var(--text-secondary)",
+          display: { xs: "none", sm: "inline-flex" },
+          mr: 0.5,
+        }}
+      >
+        <KeyboardVoiceOutlined fontSize="small" />
+      </IconButton>
+
       <IconButton
         type="submit"
+        aria-label="submit search"
         sx={{
-          p: { xs: "5px", sm: "10px" }, // Increased padding for larger touch target
-          color: "red",
+          width: 58,
+          height: "100%",
+          borderRadius: 0,
+          borderLeft: "1px solid #303030",
+          color: "var(--text-primary)",
+          backgroundColor: "#222222",
+          "&:hover": {
+            backgroundColor: "#2d2d2d",
+          },
         }}
-        aria-label="search"
       >
-        <Search sx={{ fontSize: { xs: "20px", sm: "24px" } }} /> {/* Responsive icon size */}
+        <Search fontSize="small" />
       </IconButton>
     </Paper>
   );
