@@ -1,7 +1,7 @@
 
 # VIDEO BOX
 ## LINK
-[VIDEOBOX](https://video-box-5msi.vercel.app/)
+[VIDEOBOX](https://video-box-alpha.vercel.app/)
 
 Welcome to Video Box! This project is a simplified version of YouTube, where we fetch data from the YouTube Data API and display the results on the frontend using Axios.
 
@@ -52,10 +52,11 @@ Deployed in Netlify
 ```
 
 ## ScreenShots
-
-![Screenshot (289)](https://github.com/user-attachments/assets/8c09d9c2-fa8b-4d1d-b917-925b4564d25a)
-![Screenshot (290)](https://github.com/user-attachments/assets/7d3adc74-db59-4e18-84b4-bad86763afbc)
-![Screenshot (291)](https://github.com/user-attachments/assets/a3990eff-6ae3-4552-b907-1f1999b53acb)
+<img width="1858" height="890" alt="Screenshot (26)" src="https://github.com/user-attachments/assets/3c312eee-8a7f-43cd-8220-9693d1933b14" />
+<img width="1851" height="885" alt="Screenshot (27)" src="https://github.com/user-attachments/assets/0a6fe8cc-d8db-435c-8cb3-c2b752be5669" />
+<img width="1843" height="884" alt="Screenshot (28)" src="https://github.com/user-attachments/assets/b10c4b4a-ac06-46b3-839a-81300bed13c5" />
+<img width="1831" height="890" alt="Screenshot (29)" src="https://github.com/user-attachments/assets/fcd4b092-5a8e-4c83-bb37-8e7c3b5eb57f" />
+<img width="1835" height="894" alt="Screenshot (30)" src="https://github.com/user-attachments/assets/6bc188c7-9630-4d02-8ae9-cfc901f7a5ca" />
 
 
 
