@@ -1,6 +1,8 @@
 import React, { useEffect, useState } from "react";
 import { Link, useParams } from "react-router-dom";
 import ReactPlayer from "react-player";
+import { generateVideoSummary } from "./utils/generateAiSummary"
+
 import {
   Avatar,
   Box,
@@ -37,7 +39,21 @@ const VideoDetail = () => {
   const [error, setError] = useState(null);
   const [bitcoinPrice, setBitcoinPrice] = useState(null);
   const [showDescription, setShowDescription] = useState(false);
+  const [aiSummary, setAiSummary] = useState(null)
+  const [loadingSummary, setLoadingSummary] = useState(false)
   const { id } = useParams();
+
+  const handleGenerateSummary = () => {
+    if (!videoDetail) return;
+    setLoadingSummary(true);
+    generateVideoSummary(
+      videoDetail.title,
+      videoDetail.shortDescription
+    ).then((summary) => {
+      setAiSummary(summary);
+      setLoadingSummary(false);
+    });
+  };
 
   useEffect(() => {
     const fetchVideoData = async () => {
@@ -47,6 +63,8 @@ const VideoDetail = () => {
       try {
         const videoData = await fetchFromAPI(`video?id=${id}`);
         setVideoDetail(videoData.videoDetails);
+
+        // AI summary generation moved to a button click
 
         const relatedVideosData = await fetchFromAPI(`video/related?id=${id}`);
         setVideos(relatedVideosData.contents?.slice(0, 12) || []);
@@ -186,6 +204,7 @@ const VideoDetail = () => {
                     borderRadius: "999px",
                   }}
                 />
+
                 <Chip
                   icon={<ThumbUpOutlined sx={{ color: "inherit !important" }} />}
                   label={formatCount(likeCount, "likes")}
@@ -197,6 +216,67 @@ const VideoDetail = () => {
                 />
               </Stack>
             </Stack>
+          </Box>
+
+          {/* AI SUMMARY BOX */}
+          <Box
+            sx={{
+              p: { xs: 1.75, md: 2 },
+              borderRadius: 3,
+              backgroundColor: "var(--bg-elevated)",
+              border: aiSummary || loadingSummary ? "1px solid #3ea6ff" : "none",
+              boxShadow: aiSummary || loadingSummary ? "0px 0px 15px rgba(62, 166, 255, 0.15)" : "none",
+            }}
+          >
+            <Stack direction="row" spacing={1} alignItems="center" justifyContent="space-between">
+              <Stack direction="row" spacing={1} alignItems="center">
+                <SmartToyOutlined sx={{ color: "#3ea6ff", fontSize: 22 }} />
+                <Typography sx={{ fontWeight: 700, color: "#3ea6ff" }}>AI Summary</Typography>
+              </Stack>
+              
+              {!aiSummary && !loadingSummary && (
+                <Button 
+                  onClick={handleGenerateSummary}
+                  variant="outlined"
+                  size="small"
+                  sx={{
+                    color: "#3ea6ff",
+                    borderColor: "#3ea6ff",
+                    borderRadius: "999px",
+                    textTransform: "none",
+                    fontWeight: 700,
+                    "&:hover": {
+                      backgroundColor: "rgba(62, 166, 255, 0.1)",
+                      borderColor: "#3ea6ff",
+                    }
+                  }}
+                >
+                  Generate Summary
+                </Button>
+              )}
+            </Stack>
+
+            {loadingSummary && (
+              <Box display="flex" justifyContent="center" alignItems="center" py={3} gap={2}>
+                <CircularProgress size={24} sx={{ color: "#3ea6ff" }} />
+                <Typography sx={{ color: "var(--text-secondary)", fontSize: "0.9rem" }}>
+                  Analyzing video...
+                </Typography>
+              </Box>
+            )}
+
+            {aiSummary && !loadingSummary && (
+              <Typography
+                sx={{
+                  color: "var(--text-primary)",
+                  whiteSpace: "pre-wrap",
+                  lineHeight: 1.65,
+                  mt: 2
+                }}
+              >
+                {aiSummary}
+              </Typography>
+            )}
           </Box>
 
           <Box
