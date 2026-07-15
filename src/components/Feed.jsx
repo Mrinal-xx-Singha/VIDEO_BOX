@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { Box, CircularProgress, Stack, Typography } from "@mui/material";
+import { Box, Stack, Typography } from "@mui/material";
 
 import { fetchFromAPI } from "./utils/fetchFromAPI";
 import { Sidebar, Videos } from "./";
@@ -73,16 +73,12 @@ const Feed = () => {
           </Typography>
         </Box>
 
-        {loading ? (
-          <Box display="flex" justifyContent="center" alignItems="center" minHeight="45vh">
-            <CircularProgress sx={{ color: "var(--brand)" }} />
-          </Box>
-        ) : error ? (
+        {error ? (
           <Typography sx={{ color: "#ff8a80", py: 6, textAlign: "center" }}>
             {error}
           </Typography>
         ) : (
-          <Videos videos={videos} channelAvatars={channelAvatars} />
+          <Videos videos={videos} channelAvatars={channelAvatars} isLoading={loading} />
         )}
       </Box>
     </Stack>

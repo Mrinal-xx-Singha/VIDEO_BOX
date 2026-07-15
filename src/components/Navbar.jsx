@@ -1,7 +1,7 @@
 import React from "react";
 import { Avatar, Box, Button, Stack, Typography } from "@mui/material";
 import { Link, useLocation } from "react-router-dom";
-import { Menu, NotificationsNone, SmartToyOutlined } from "@mui/icons-material";
+import {  NotificationsNone, SmartToyOutlined } from "@mui/icons-material";
 
 import SearchBar from "./SearchBar";
 
@@ -57,21 +57,6 @@ const Navbar = React.memo(() => {
           spacing={1.25}
           sx={{ minWidth: { md: 210 }, flexShrink: 0 }}
         >
-          <Box
-            sx={{
-              width: 36,
-              height: 36,
-              borderRadius: "50%",
-              display: { xs: "none", sm: "inline-flex" },
-              alignItems: "center",
-              justifyContent: "center",
-              backgroundColor: "transparent",
-              border: "1px solid var(--border)",
-              color: "var(--text-primary)",
-            }}
-          >
-            <Menu fontSize="small" />
-          </Box>
 
           <Link to="/" aria-label="Video Box home">
             <Stack direction="row" alignItems="center" spacing={1}>
