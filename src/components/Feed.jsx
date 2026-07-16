@@ -1,52 +1,40 @@
-import React, { useEffect, useState } from "react";
+import React, { useState } from "react";
 import { Box, Stack, Typography } from "@mui/material";
 
 import { fetchFromAPI } from "./utils/fetchFromAPI";
 import { Sidebar, Videos } from "./";
+import { useQuery } from "@tanstack/react-query";
 
 const Feed = () => {
   const [selectedCategory, setSelectedCategory] = useState("New");
-  const [videos, setVideos] = useState(null);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState(null);
-  const [channelAvatars, setChannelAvatars] = useState({})
 
-  useEffect(() => {
-    const fetchVideos = async () => {
-      setLoading(true);
-      setVideos(null);
-      setError(null);
+  const {data,isLoading,isError}=useQuery({
+    queryKey:['videos',selectedCategory],
+    queryFn:async()=>{
+      // fetch videos
+      const searchData = await fetchFromAPI(`search?query=${selectedCategory}`)
+      const videoList = searchData?.contents || []
 
-      try {
-        const data = await fetchFromAPI(`search?query=${selectedCategory}`);
+      // Fetch the channel avatars 
+      const videoItems = videoList.filter((item)=>item?.video)
+      const uniqueChannelIds = [...new Set(videoItems.map((item)=>item.video.channelId).filter(Boolean))]
 
-        setVideos(data.contents || []);
-
-        const videoItems = (data.contents || []).filter((item) => item?.video)
-        const uniqueChannelIds = [...new Set(videoItems.map((item) => item.video.channelId).filter(Boolean))]
-
-        const avatarEntries = await Promise.all(
-          uniqueChannelIds.map(async (channelId) => {
-            const channelData = await fetchFromAPI(`channel?id=${channelId}`)
-            return [
-              channelId,
-              channelData?.avatar?.thumbnails?.[0]?.url || "",
-            ];
-          })
-        )
-        setChannelAvatars(Object.fromEntries(avatarEntries))
-      } catch (err) {
-        setError("Failed to fetch videos.");
-      } finally {
-        setLoading(false);
+      const avatarEntries = await Promise.all(
+        uniqueChannelIds.map(async(channelId)=>{
+          const channelData = await fetchFromAPI(`channel?id=${channelId}`)
+          return [channelId,channelData?.avatar?.thumbnails?.[0]?.url || ""]
+        })
+      )
+      return {
+        videos:videoList,
+        channelAvatars:Object.fromEntries(avatarEntries)
       }
-    };
+    },
+    staleTime:1000*60*5 //Keep the data fresh in cache for 5 minutes
+  })
 
-    fetchVideos();
-  }, [selectedCategory]);
-
-
-
+  const videos = data?.videos || []
+  const channelAvatars = data?.channelAvatars || {}
   return (
     <Stack direction={{ xs: "column", lg: "row" }} spacing={{ xs: 2, md: 3, lg: 3 }}>
       <Box sx={{ width: { xs: "100%", lg: 220 }, flexShrink: 0 }}>
@@ -73,12 +61,12 @@ const Feed = () => {
           </Typography>
         </Box>
 
-        {error ? (
+        {isError ? (
           <Typography sx={{ color: "#ff8a80", py: 6, textAlign: "center" }}>
-            {error}
+            Failed to load vides. please try again 
           </Typography>
         ) : (
-          <Videos videos={videos} channelAvatars={channelAvatars} isLoading={loading} />
+          <Videos videos={videos} channelAvatars={channelAvatars} isLoading={isLoading} />
         )}
       </Box>
     </Stack>
