@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, {  useState } from "react";
 import { Link, useParams } from "react-router-dom";
 import ReactPlayer from "react-player";
 import { generateVideoSummary } from "./utils/generateAiSummary"
@@ -22,6 +22,7 @@ import {
 import { Videos } from "./";
 import { fetchFromAPI } from "./utils/fetchFromAPI";
 import { fetchGeminiData } from "./utils/fetchFromGemini";
+import { useQuery } from "@tanstack/react-query";
 
 const formatCount = (value, suffix) => {
   if (!value) return `N/A ${suffix}`;
@@ -33,16 +34,32 @@ const formatCount = (value, suffix) => {
 };
 
 const VideoDetail = () => {
-  const [videoDetail, setVideoDetail] = useState(null);
-  const [videos, setVideos] = useState([]);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState(null);
-  const [bitcoinPrice, setBitcoinPrice] = useState(null);
-  const [showDescription, setShowDescription] = useState(false);
-  const [aiSummary, setAiSummary] = useState(null)
-  const [loadingSummary, setLoadingSummary] = useState(false)
   const { id } = useParams();
+  const [showDescription, setShowDescription] = useState(false);
+  const [aiSummary, setAiSummary] = useState(null);
+  const [loadingSummary, setLoadingSummary] = useState(false);
 
+  const {data,isLoading,isError:error} = useQuery({
+    queryKey:['videoDetail',id], 
+    queryFn:async()=>{
+      const [videoData,relatedVideoData,bitcoinData]=await Promise.all([
+        fetchFromAPI(`video?id=${id}`),
+        fetchFromAPI(`video/related?id=${id}`),
+        fetchGeminiData('btcusd')
+      ])
+      return {
+        videoDetail:videoData.videoDetails,
+        videos:relatedVideoData.contents?.slice(0,12) || [],
+        bitcoinPrice:bitcoinData?.last || null
+      }
+    }
+    ,staleTime:1000 * 60 * 5
+  })
+  const videoDetail = data?.videoDetail || null
+  const videos = data?.videos || []
+  const bitcoinPrice = data?.bitcoinPrice || null
+  
+  
   const handleGenerateSummary = () => {
     if (!videoDetail) return;
     setLoadingSummary(true);
@@ -54,34 +71,8 @@ const VideoDetail = () => {
       setLoadingSummary(false);
     });
   };
-
-  useEffect(() => {
-    const fetchVideoData = async () => {
-      setLoading(true);
-      setError(null);
-
-      try {
-        const videoData = await fetchFromAPI(`video?id=${id}`);
-        setVideoDetail(videoData.videoDetails);
-
-        // AI summary generation moved to a button click
-
-        const relatedVideosData = await fetchFromAPI(`video/related?id=${id}`);
-        setVideos(relatedVideosData.contents?.slice(0, 12) || []);
-
-        const bitcoinData = await fetchGeminiData("btcusd");
-        setBitcoinPrice(bitcoinData?.last || null);
-      } catch (fetchError) {
-        setError("Failed to load video details. Please try again later.");
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    fetchVideoData();
-  }, [id]);
-
-  if (loading) {
+  
+  if (isLoading) {
     return (
       <Box minHeight="70vh" display="flex" justifyContent="center" alignItems="center">
         <CircularProgress sx={{ color: "var(--brand)" }} />
@@ -367,7 +358,7 @@ const VideoDetail = () => {
           <Typography sx={{ color: "var(--text-secondary)", fontSize: "0.82rem", mb: 0.5 }}>
             Up next
           </Typography>
-          <Videos videos={videos} direction="column" />
+          <Videos videos={videos} direction="column" isLoading={isLoading}/>
         </Box>
       </Box>
     </Stack>
