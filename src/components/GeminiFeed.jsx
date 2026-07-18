@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, {  useState } from "react";
 import {
   Box,
   CircularProgress,
@@ -18,6 +18,7 @@ import {
 import Videos from "./Videos";
 import { fetchFromAPI } from "./utils/fetchFromAPI";
 import { fetchGeminiData } from "./utils/fetchFromGemini";
+import { useQuery } from "@tanstack/react-query";
 
 const CRYPTO_OPTIONS = [
   { symbol: "btcusd", name: "Bitcoin (BTC)" },
@@ -41,58 +42,49 @@ const statCards = (selectedCrypto, cryptoPrices) => [
     icon: <AutoGraphOutlined fontSize="small" />,
   },
   {
-    label: "24h change",
-    value: cryptoPrices?.percentChange ? `${cryptoPrices.percentChange}%` : "Unavailable",
+    label: "Last Updated",
+    value: cryptoPrices?.volume?.timestamp 
+      ? new Date(cryptoPrices.volume.timestamp).toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'}) 
+      : "Unavailable",
     icon: <SyncOutlined fontSize="small" />,
   },
   {
     label: "Volume",
     value:
-      cryptoPrices?.volume?.[selectedCrypto.replace("usd", "")]
-        ? `${cryptoPrices.volume[selectedCrypto.replace("usd", "")]} ${selectedCrypto
-            .replace("usd", "")
-            .toUpperCase()}`
+      cryptoPrices?.volume?.[selectedCrypto.replace("usd", "").toUpperCase()]
+        ? `${cryptoPrices.volume[selectedCrypto.replace("usd", "").toUpperCase()]} ${selectedCrypto
+          .replace("usd", "")
+          .toUpperCase()}`
         : "Unavailable",
     icon: <NewspaperOutlined fontSize="small" />,
   },
 ];
 
 const GeminiFeed = () => {
-  const [cryptoPrices, setCryptoPrices] = useState({});
+
   const [selectedCrypto, setSelectedCrypto] = useState("btcusd");
-  const [videos, setVideos] = useState([]);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState(null);
 
-  const fetchCryptoDataAndVideos = async (cryptoSymbol) => {
-    try {
-      setLoading(true);
-      setError(null);
+  const { data, isLoading, isError: error } = useQuery({
+    queryKey: ['geminiFeed', selectedCrypto],
+    queryFn: async () => {
+      // fetch both the price 
+      // and the videos at the same time 
+      const [cryptoData, videoData] = await Promise.all([
+        fetchGeminiData(selectedCrypto)
+        , fetchFromAPI(`search?query=${selectedCrypto.replace('usd', "")}%20news&maxResults=6`)
+      ])
 
-      const cryptoData = await fetchGeminiData(cryptoSymbol);
-      setCryptoPrices(cryptoData || {});
+      return {
+        cryptoPrices: cryptoData || {},
+        videos: videoData.contents?.slice(0, 6) || []
+      }
 
-      const videoData = await fetchFromAPI(
-        `search?query=${cryptoSymbol.replace("usd", "")}%20news&maxResults=6`
-      );
-      setVideos(videoData.contents?.slice(0, 6) || []);
-    } catch (err) {
-      setError("Failed to load market data.");
-    } finally {
-      setLoading(false);
     }
-  };
+  })
 
-  useEffect(() => {
-    fetchCryptoDataAndVideos(selectedCrypto);
-
-    const intervalId = setInterval(() => {
-      fetchCryptoDataAndVideos(selectedCrypto);
-    }, 60000);
-
-    return () => clearInterval(intervalId);
-  }, [selectedCrypto]);
-
+  const cryptoPrices = data?.cryptoPrices || {}
+  const videos = data?.videos || []
+console.log(cryptoPrices)
   return (
     <Stack spacing={3}>
       <Stack
@@ -139,13 +131,16 @@ const GeminiFeed = () => {
         </Box>
       </Stack>
 
-      {loading ? (
+      {isLoading ? (
         <Box display="flex" justifyContent="center" alignItems="center" minHeight="40vh">
           <CircularProgress sx={{ color: "var(--brand)" }} />
         </Box>
       ) : error ? (
-        <Typography sx={{ color: "#ff8a80", py: 6, textAlign: "center" }}>{error}</Typography>
+        <Typography sx={{ color: "#ff8a80", py: 6, textAlign: "center" }}>
+          Failed to load market data.
+        </Typography>
       ) : (
+        // stat cards grid
         <Grid container spacing={2}>
           {statCards(selectedCrypto, cryptoPrices).map((card) => (
             <Grid item xs={12} sm={6} lg={3} key={card.label}>
@@ -180,7 +175,7 @@ const GeminiFeed = () => {
         >
           {CRYPTO_OPTIONS.find((crypto) => crypto.symbol === selectedCrypto)?.name}
         </Typography>
-        <Videos videos={videos} />
+        <Videos videos={videos} isLoading={isLoading}/>
       </Box>
     </Stack>
   );
