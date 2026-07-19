@@ -13,3 +13,24 @@ export const fetchGeminiData = async (cryptoSymbol = "btcusd") => {
     throw error;
   }
 };
+
+
+export const fetchGeminiChartData = async (cryptoSymbol = "btcusd") => {
+  try {
+    const res = await axios.get(`https://api.gemini.com/v2/candles/${cryptoSymbol}/1day`);
+    // gemini returns an array of arrays 
+    // we grab the last 30 days, reverse them to ne chronological,and map them for recharts
+
+    const data = res.data.slice(0, 30).reverse();
+    return data.map((candle) => ({
+      date: new Date(candle[0]).toLocaleDateString(undefined, {
+        month: 'short', day: 'numeric'
+      }),
+      price: candle[4] // Index 4 is the closing price
+    }));
+  } catch (err) {
+    console.error("Error fetching Gemini chart data:", err);
+    return []
+
+  }
+}

@@ -37,7 +37,15 @@ const Feed = () => {
   const channelAvatars = data?.channelAvatars || {}
   return (
     <Stack direction={{ xs: "column", lg: "row" }} spacing={{ xs: 2, md: 3, lg: 3 }}>
-      <Box sx={{ width: { xs: "100%", lg: 220 }, flexShrink: 0 }}>
+      <Box sx={{ 
+        width: { xs: "100%", lg: 220 }, 
+        flexShrink: 0,
+        position: { lg: "sticky" },
+        top: "80px", // offset for the navbar
+        height: { lg: "calc(100vh - 80px)" },
+        overflowY: "auto",
+        "&::-webkit-scrollbar": { display: "block" } 
+      }}>
         <Sidebar
           selectedCategory={selectedCategory}
           setSelectedCategory={setSelectedCategory}
