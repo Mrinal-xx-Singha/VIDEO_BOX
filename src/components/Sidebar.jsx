@@ -8,6 +8,7 @@ const Sidebar = ({ selectedCategory, setSelectedCategory }) => (
     sx={{
       width: "100%",
       p: { xs: 0, md: 1 },
+
     }}
   >
     <Typography

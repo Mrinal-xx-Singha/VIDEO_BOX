@@ -1,4 +1,4 @@
-import React, {  useState } from "react";
+import React, { useState } from "react";
 import {
   Box,
   CircularProgress,
@@ -17,8 +17,9 @@ import {
 
 import Videos from "./Videos";
 import { fetchFromAPI } from "./utils/fetchFromAPI";
-import { fetchGeminiData } from "./utils/fetchFromGemini";
+import { fetchGeminiChartData, fetchGeminiData } from "./utils/fetchFromGemini";
 import { useQuery } from "@tanstack/react-query";
+import { LineChart, ResponsiveContainer, XAxis,YAxis,Tooltip,Line } from "recharts";
 
 const CRYPTO_OPTIONS = [
   { symbol: "btcusd", name: "Bitcoin (BTC)" },
@@ -43,8 +44,8 @@ const statCards = (selectedCrypto, cryptoPrices) => [
   },
   {
     label: "Last Updated",
-    value: cryptoPrices?.volume?.timestamp 
-      ? new Date(cryptoPrices.volume.timestamp).toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'}) 
+    value: cryptoPrices?.volume?.timestamp
+      ? new Date(cryptoPrices.volume.timestamp).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
       : "Unavailable",
     icon: <SyncOutlined fontSize="small" />,
   },
@@ -69,22 +70,27 @@ const GeminiFeed = () => {
     queryFn: async () => {
       // fetch both the price 
       // and the videos at the same time 
-      const [cryptoData, videoData] = await Promise.all([
-        fetchGeminiData(selectedCrypto)
-        , fetchFromAPI(`search?query=${selectedCrypto.replace('usd', "")}%20news&maxResults=6`)
+      const [cryptoData, videoData, chartData] = await Promise.all([
+        fetchGeminiData(selectedCrypto),
+        fetchFromAPI(`search?query=${selectedCrypto.replace('usd', "")}%20news&maxResults=6`),
+        fetchGeminiChartData(selectedCrypto)
       ])
 
       return {
         cryptoPrices: cryptoData || {},
-        videos: videoData.contents?.slice(0, 6) || []
+        videos: videoData.contents?.slice(0, 6) || [],
+        chartData: chartData || []
       }
 
-    }
+    },
+    refetchInterval: 60000,
   })
+
+  const chartData = data?.chartData || []
 
   const cryptoPrices = data?.cryptoPrices || {}
   const videos = data?.videos || []
-console.log(cryptoPrices)
+  console.log(cryptoPrices)
   return (
     <Stack spacing={3}>
       <Stack
@@ -164,6 +170,45 @@ console.log(cryptoPrices)
           ))}
         </Grid>
       )}
+      {/* Chart Box */}
+      {!isLoading && !error && chartData.length > 0 && (
+        <Box
+          sx={{
+            backgroundColor: 'var(--bg-elevated)',
+            borderRadius: 3,
+            p: {
+              xs: 2,
+              md: 3,
+              height: 300
+            }
+
+
+          }}
+        >
+          <Typography
+            sx={{ fontWeight: 700, mb: 3 }}
+          >30-Day Price History</Typography>
+          <ResponsiveContainer width="100%" height="100%">
+            <LineChart data={chartData}>
+              <XAxis dataKey="date" stroke="var(--text-secondary)"
+                fontSize={12}
+                tickLine={false}
+                axisLine={false}
+                minTickGap={20}
+              />
+              <YAxis domain={['auto', 'auto']} stroke="var(--text-secondary)" fontSize={12} tickLine={false} axisLine={false} tickFormatter={(val) => `$${val.toLocaleString()}`} width={80} />
+              <Tooltip
+                contentStyle={{ backgroundColor: "var(--bg-accent)", border: "none", borderRadius: "8px", color: "#fff" }}
+                itemStyle={{ color: "#3ea6ff", fontWeight: 700 }}
+                formatter={(value) => [`$${value.toLocaleString()}`, "Price"]}
+              />
+              <Line type="monotone" dataKey="price" stroke="#3ea6ff" strokeWidth={3} dot={false} activeDot={{ r: 6, fill: "#3ea6ff", stroke: "#fff" }} />
+
+            </LineChart>
+          </ResponsiveContainer>
+
+        </Box>
+      )}
 
       <Box>
         <Typography sx={{ color: "var(--text-secondary)", fontSize: "0.82rem", mb: 0.5 }}>
@@ -175,7 +220,7 @@ console.log(cryptoPrices)
         >
           {CRYPTO_OPTIONS.find((crypto) => crypto.symbol === selectedCrypto)?.name}
         </Typography>
-        <Videos videos={videos} isLoading={isLoading}/>
+        <Videos videos={videos} isLoading={isLoading} />
       </Box>
     </Stack>
   );
