@@ -1,35 +1,48 @@
-import React, { useEffect, useState } from "react";
+import React from "react";
 import { useParams } from "react-router-dom";
 import { Box, CircularProgress, Stack, Typography } from "@mui/material";
 
 import { Videos, ChannelCard } from "./";
 import { fetchFromAPI } from "./utils/fetchFromAPI";
+import { useQuery } from "@tanstack/react-query";
 
 const ChannelDetail = () => {
-  const [channelDetail, setChannelDetail] = useState();
-  const [videos, setVideos] = useState(null);
-  const [loading, setLoading] = useState(true);
   const { id } = useParams();
 
-  useEffect(() => {
-    const fetchResults = async () => {
-      setLoading(true);
+  const { data, isLoading, isError } = useQuery({
+    queryKey: ['channelDetail', id],
+    queryFn: async () => {
+      const channelData = await fetchFromAPI(`channel?id=${id}`);
+      
+      // The API strips channelName/channelId from videos when fetching a channel.
+      // We must inject them back so VideoCard doesn't default to "JavaScript Mastery"!
+      const videos = channelData.contents?.filter((item) => item.video).map((item) => {
+        item.video.channelName = channelData.title;
+        item.video.channelId = id;
+        return item;
+      }) || [];
 
-      try {
-        const channelData = await fetchFromAPI(`channel?id=${id}`);
-        setChannelDetail(channelData);
-        setVideos(channelData.contents?.filter((item) => item.video) || []);
-      } catch (error) {
-        setVideos([]);
-      } finally {
-        setLoading(false);
-      }
-    };
+      return {
+        channelDetail: channelData,
+        videos: videos
+      };
+    },
+    staleTime: 1000 * 60 * 5,
+  });
 
-    fetchResults();
-  }, [id]);
+  const channelDetail = data?.channelDetail;
+  const videos = data?.videos || [];
+  console.log(channelDetail)
 
-  if (loading) {
+  if (isError) {
+    return (
+      <Typography color="#ff8a80" textAlign="center" minHeight="70vh" pt={10}>
+        Failed to load channel details.
+      </Typography>
+    );
+  }
+
+  if (isLoading) {
     return (
       <Box minHeight="70vh" display="flex" justifyContent="center" alignItems="center">
         <CircularProgress sx={{ color: "var(--brand)" }} />
@@ -61,7 +74,7 @@ const ChannelDetail = () => {
         >
           Videos
         </Typography>
-        <Videos videos={videos} />
+        <Videos videos={videos} isLoading={isLoading}/>
       </Box>
     </Stack>
   );
