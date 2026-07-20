@@ -19,7 +19,7 @@ import Videos from "./Videos";
 import { fetchFromAPI } from "./utils/fetchFromAPI";
 import { fetchGeminiChartData, fetchGeminiData } from "./utils/fetchFromGemini";
 import { useQuery } from "@tanstack/react-query";
-import { LineChart, ResponsiveContainer, XAxis,YAxis,Tooltip,Line } from "recharts";
+import { LineChart, ResponsiveContainer, XAxis, YAxis, Tooltip, Line } from "recharts";
 
 const CRYPTO_OPTIONS = [
   { symbol: "btcusd", name: "Bitcoin (BTC)" },
@@ -149,13 +149,14 @@ const GeminiFeed = () => {
         // stat cards grid
         <Grid container spacing={2}>
           {statCards(selectedCrypto, cryptoPrices).map((card) => (
-            <Grid item xs={12} sm={6} lg={3} key={card.label}>
+            <Grid item xs={12} sm={6} lg={3} key={card.label} >
               <Box
                 sx={{
                   height: "100%",
                   p: 2,
                   borderRadius: 3,
                   backgroundColor: "var(--bg-elevated)",
+                  width: "100%",
                 }}
               >
                 <Stack direction="row" spacing={1} alignItems="center" sx={{ color: "var(--text-secondary)" }}>
@@ -176,20 +177,26 @@ const GeminiFeed = () => {
           sx={{
             backgroundColor: 'var(--bg-elevated)',
             borderRadius: 3,
-            p: {
-              xs: 2,
-              md: 3,
-              height: 300
-            }
-
-
+            p: { xs: 2, md: 3 },
+            height: 350,
+            boxSizing: "border-box",
+            minWidth: 0,
+            overflow: "hidden"
           }}
         >
           <Typography
             sx={{ fontWeight: 700, mb: 3 }}
           >30-Day Price History</Typography>
-          <ResponsiveContainer width="100%" height="100%">
-            <LineChart data={chartData}>
+          <ResponsiveContainer width="99%" height="100%">
+            <LineChart data={chartData}
+              responsive
+              margin={{
+                top: 5,
+                right: 0,
+                left: 0,
+                bottom: 20,
+              }}
+            >
               <XAxis dataKey="date" stroke="var(--text-secondary)"
                 fontSize={12}
                 tickLine={false}
@@ -203,10 +210,8 @@ const GeminiFeed = () => {
                 formatter={(value) => [`$${value.toLocaleString()}`, "Price"]}
               />
               <Line type="monotone" dataKey="price" stroke="#3ea6ff" strokeWidth={3} dot={false} activeDot={{ r: 6, fill: "#3ea6ff", stroke: "#fff" }} />
-
             </LineChart>
           </ResponsiveContainer>
-
         </Box>
       )}
 
