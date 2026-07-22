@@ -3,7 +3,7 @@
   <p>A high-performance, modern YouTube clone integrated with real-time Crypto data, AI summaries, and interactive data visualization.</p>
 
   <a href="https://video-box-alpha.vercel.app/"><strong>View Live Demo</strong></a> · 
-  <a href="https://mrinalspersonalportfolio.netlify.app/"><strong>My Portfolio</strong></a> · 
+  <a href="https://next-folio-bay.vercel.app/"><strong>My Portfolio</strong></a> · 
   <a href="https://www.linkedin.com/in/mrinal-singha-754b57249/"><strong>LinkedIn</strong></a>
 </div>
 
