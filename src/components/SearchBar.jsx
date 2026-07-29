@@ -1,18 +1,20 @@
+"use client";
+
 import React, { useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { useRouter } from "next/navigation";
 import { Box, IconButton, Paper } from "@mui/material";
 import { Search, KeyboardVoiceOutlined } from "@mui/icons-material";
 
 const SearchBar = () => {
   const [searchTerm, setSearchTerm] = useState("");
-  const navigate = useNavigate();
+  const router = useRouter();
 
   const handleSubmit = (event) => {
     event.preventDefault();
     const trimmedTerm = searchTerm.trim();
 
     if (trimmedTerm) {
-      navigate(`/search/${trimmedTerm}`);
+      router.push(`/search/${trimmedTerm}`);
       setSearchTerm("");
     }
   };

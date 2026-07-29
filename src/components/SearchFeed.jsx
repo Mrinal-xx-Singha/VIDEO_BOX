@@ -1,6 +1,8 @@
+"use client";
+
 import React, { useEffect, useState } from "react";
 import { Box, CircularProgress, Typography } from "@mui/material";
-import { useParams } from "react-router-dom";
+import { useParams } from "next/navigation";
 
 import { fetchFromAPI } from "./utils/fetchFromAPI";
 import { Videos } from "./";

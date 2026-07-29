@@ -1,7 +1,9 @@
+"use client";
+
 import React from "react";
 import { Avatar, Box, Chip, Stack, Typography } from "@mui/material";
 import { CheckCircle } from "@mui/icons-material";
-import { Link } from "react-router-dom";
+import Link from "next/link";
 
 const ChannelCard = ({ channelDetail, marginTop }) => (
   <Box
@@ -11,7 +13,7 @@ const ChannelCard = ({ channelDetail, marginTop }) => (
       mt: marginTop || 0,
     }}
   >
-    <Link to={`/channel/${channelDetail?.channelId || ""}`}>
+    <Link href={`/channel/${channelDetail?.channelId || ""}`}>
       <Stack
         direction={{ xs: "column", sm: "row" }}
         spacing={2.5}

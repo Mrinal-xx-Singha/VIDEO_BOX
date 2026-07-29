@@ -1,5 +1,7 @@
+"use client";
+
 import React from "react";
-import { Link } from "react-router-dom";
+import Link from "next/link";
 import { Avatar, Box, Card, Stack, Typography } from "@mui/material";
 import { CheckCircle } from "@mui/icons-material";
 
@@ -33,7 +35,7 @@ const VideoCard = ({ video, compact = false,channelAvatars={} }) => {
       }}
     >
       <Stack direction={compact ? "row" : "column"} spacing={compact ? 1.25 : 1.3}>
-        <Link to={videoLink} style={{ flexShrink: 0 }}>
+        <Link href={videoLink} style={{ flexShrink: 0 }}>
           <Box
             component="img"
             src={thumbnail}
@@ -68,7 +70,7 @@ const VideoCard = ({ video, compact = false,channelAvatars={} }) => {
           )}
 
           <Box sx={{ minWidth: 0, flex: 1 }}>
-            <Link to={videoLink}>
+            <Link href={videoLink}>
               <Typography
                 className={compact ? "line-clamp-3" : "line-clamp-2"}
                 sx={{
@@ -84,7 +86,7 @@ const VideoCard = ({ video, compact = false,channelAvatars={} }) => {
             </Link>
 
             <Stack spacing={0.25} sx={{ mt: 0.7 }}>
-              <Link to={channelLink}>
+              <Link href={channelLink}>
                 <Stack direction="row" spacing={0.6} alignItems="center">
                   <Typography
                     className="line-clamp-2"
