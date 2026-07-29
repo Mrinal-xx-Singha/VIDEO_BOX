@@ -1,4 +1,4 @@
-// utils/fetchGeminiData.js
+"use server";
 
 import axios from "axios";
 

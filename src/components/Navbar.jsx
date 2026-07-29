@@ -1,7 +1,10 @@
+"use client";
+
 import React from "react";
 import { Avatar, Box, Button, Stack, Typography } from "@mui/material";
-import { Link, useLocation } from "react-router-dom";
-import {  NotificationsNone, SmartToyOutlined } from "@mui/icons-material";
+import Link from "next/link";
+import { usePathname } from "next/navigation";
+import { NotificationsNone, SmartToyOutlined } from "@mui/icons-material";
 
 import SearchBar from "./SearchBar";
 
@@ -23,8 +26,8 @@ const actionLinkSx = (active) => ({
 });
 
 const Navbar = React.memo(() => {
-  const location = useLocation();
-  const aiActive = location.pathname.startsWith("/ai");
+  const pathname = usePathname() || "";
+  const aiActive = pathname.startsWith("/ai");
 
   return (
     <Box
@@ -58,7 +61,7 @@ const Navbar = React.memo(() => {
           sx={{ minWidth: { md: 210 }, flexShrink: 0 }}
         >
 
-          <Link to="/" aria-label="Video Box home">
+          <Link href="/" aria-label="Video Box home">
             <Stack direction="row" alignItems="center" spacing={1}>
               <Box
                 sx={{
@@ -114,7 +117,7 @@ const Navbar = React.memo(() => {
           spacing={1}
           sx={{ order: { xs: 2, md: 3 }, flexShrink: 0 }}
         >
-          <Link to="/ai">
+          <Link href="/ai">
             <Button startIcon={<SmartToyOutlined />} sx={actionLinkSx(aiActive)}>
               <Box component="span" sx={{ display: { xs: "none", sm: "inline" } }}>
                 Crypto AI

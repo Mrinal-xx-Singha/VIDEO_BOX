@@ -1,11 +1,13 @@
+"use server";
+
 import { GoogleGenerativeAI } from "@google/generative-ai";
-// Initialize the google ai client with the secret key
-const genAI = new GoogleGenerativeAI(process.env.REACT_APP_GEMINI_API_KEY);
 
 export const generateVideoSummary = async (videoTitle, videoDescription) => {
     try {
+        const apiKey = process.env.GEMINI_API_KEY || process.env.REACT_APP_GEMINI_API_KEY || "";
+        const genAI = new GoogleGenerativeAI(apiKey);
         // select the specific ai model we want to use
-        const model = genAI.getGenerativeModel({ model: "gemini-2.5-flash" })
+        const model = genAI.getGenerativeModel({ model: "gemini-2.5-flash" });
 
         const prompt = `
         Act as an expert YouTube summarizer. 

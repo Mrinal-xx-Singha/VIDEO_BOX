@@ -1,5 +1,8 @@
-import React, {  useState } from "react";
-import { Link, useParams } from "react-router-dom";
+"use client";
+
+import React, { useState } from "react";
+import Link from "next/link";
+import { useParams } from "next/navigation";
 import ReactPlayer from "react-player";
 import { generateVideoSummary } from "./utils/generateAiSummary"
 
@@ -149,7 +152,7 @@ const VideoDetail = () => {
                 </Avatar>
 
                 <Box sx={{ minWidth: 0 }}>
-                  <Link to={`/channel/${channelId}`}>
+                  <Link href={`/channel/${channelId}`}>
                     <Stack direction="row" spacing={0.8} alignItems="center">
                       <Typography
                         className="line-clamp-2"
@@ -333,7 +336,7 @@ const VideoDetail = () => {
                 <Typography sx={{ fontSize: { xs: "1.35rem", md: "1.6rem" }, fontWeight: 700 }}>
                   {bitcoinPrice ? `$${bitcoinPrice}` : "Unavailable"}
                 </Typography>
-                <Link to="/ai">
+                <Link href="/ai">
                   <Button
                     sx={{
                       borderRadius: "999px",
