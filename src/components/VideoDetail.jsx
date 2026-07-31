@@ -26,6 +26,7 @@ import { Videos } from "./";
 import { fetchFromAPI } from "./utils/fetchFromAPI";
 import { fetchGeminiData } from "./utils/fetchFromGemini";
 import { useQuery } from "@tanstack/react-query";
+import VideoChat from "./VideoChat";
 
 const formatCount = (value, suffix) => {
   if (!value) return `N/A ${suffix}`;
@@ -42,27 +43,27 @@ const VideoDetail = () => {
   const [aiSummary, setAiSummary] = useState(null);
   const [loadingSummary, setLoadingSummary] = useState(false);
 
-  const {data,isLoading,isError:error} = useQuery({
-    queryKey:['videoDetail',id], 
-    queryFn:async()=>{
-      const [videoData,relatedVideoData,bitcoinData]=await Promise.all([
+  const { data, isLoading, isError: error } = useQuery({
+    queryKey: ['videoDetail', id],
+    queryFn: async () => {
+      const [videoData, relatedVideoData, bitcoinData] = await Promise.all([
         fetchFromAPI(`video?id=${id}`),
         fetchFromAPI(`video/related?id=${id}`),
         fetchGeminiData('btcusd')
       ])
       return {
-        videoDetail:videoData.videoDetails,
-        videos:relatedVideoData.contents?.slice(0,12) || [],
-        bitcoinPrice:bitcoinData?.last || null
+        videoDetail: videoData.videoDetails,
+        videos: relatedVideoData.contents?.slice(0, 12) || [],
+        bitcoinPrice: bitcoinData?.last || null
       }
     }
-    ,staleTime:1000 * 60 * 5
+    , staleTime: 1000 * 60 * 5
   })
   const videoDetail = data?.videoDetail || null
   const videos = data?.videos || []
   const bitcoinPrice = data?.bitcoinPrice || null
-  
-  
+
+
   const handleGenerateSummary = () => {
     if (!videoDetail) return;
     setLoadingSummary(true);
@@ -74,7 +75,7 @@ const VideoDetail = () => {
       setLoadingSummary(false);
     });
   };
-  
+
   if (isLoading) {
     return (
       <Box minHeight="70vh" display="flex" justifyContent="center" alignItems="center">
@@ -227,9 +228,9 @@ const VideoDetail = () => {
                 <SmartToyOutlined sx={{ color: "#3ea6ff", fontSize: 22 }} />
                 <Typography sx={{ fontWeight: 700, color: "#3ea6ff" }}>AI Summary</Typography>
               </Stack>
-              
+
               {!aiSummary && !loadingSummary && (
-                <Button 
+                <Button
                   onClick={handleGenerateSummary}
                   variant="outlined"
                   size="small"
@@ -272,7 +273,6 @@ const VideoDetail = () => {
               </Typography>
             )}
           </Box>
-
           <Box
             sx={{
               p: { xs: 1.75, md: 2 },
@@ -310,6 +310,11 @@ const VideoDetail = () => {
               </Button>
             )}
           </Box>
+          {/* Video Chat */}
+          <VideoChat
+            videoTitle={videoDetail?.title || ""}
+            videoDescription={videoDetail?.shortDescription || ""}
+          />
 
           <Box
             sx={{
@@ -361,7 +366,7 @@ const VideoDetail = () => {
           <Typography sx={{ color: "var(--text-secondary)", fontSize: "0.82rem", mb: 0.5 }}>
             Up next
           </Typography>
-          <Videos videos={videos} direction="column" isLoading={isLoading}/>
+          <Videos videos={videos} direction="column" isLoading={isLoading} />
         </Box>
       </Box>
     </Stack>
