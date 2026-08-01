@@ -6,7 +6,7 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { NotificationsNone, SmartToyOutlined } from "@mui/icons-material";
 
-import SearchBar from "./SearchBar";
+import {SearchBar,AuthButton} from "./";
 
 const actionLinkSx = (active) => ({
   borderRadius: "999px",
@@ -139,18 +139,7 @@ const Navbar = React.memo(() => {
           >
             <NotificationsNone fontSize="small" />
           </Box>
-          <Avatar
-            sx={{
-              width: 36,
-              height: 36,
-              bgcolor: "var(--bg-accent)",
-              color: "#fff",
-              fontWeight: 700,
-              fontSize: "0.84rem",
-            }}
-          >
-            VB
-          </Avatar>
+         <AuthButton />
         </Stack>
       </Stack>
     </Box>
