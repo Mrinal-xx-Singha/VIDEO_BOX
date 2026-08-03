@@ -12,3 +12,4 @@ export { default as GeminiFeed } from "./GeminiFeed";
 export { default as VideoCardSkeleton } from "./VideoCardSkeleton"
 export { default as AuthModel } from "./AutModel"
 export { default as AuthButton } from './AuthButton';
+export { default as SmartNotes } from "./SmartNotes"
