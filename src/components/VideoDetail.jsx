@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import Link from "next/link";
 import { useParams } from "next/navigation";
 import ReactPlayer from "react-player";
@@ -13,6 +13,8 @@ import {
   Chip,
   CircularProgress,
   Stack,
+  Tab,
+  Tabs,
   Typography,
 } from "@mui/material";
 import {
@@ -22,7 +24,7 @@ import {
   SmartToyOutlined,
 } from "@mui/icons-material";
 
-import { Videos } from "./";
+import { Videos, SmartNotes } from "./";
 import { fetchFromAPI } from "./utils/fetchFromAPI";
 import { fetchGeminiData } from "./utils/fetchFromGemini";
 import { useQuery } from "@tanstack/react-query";
@@ -42,6 +44,9 @@ const VideoDetail = () => {
   const [showDescription, setShowDescription] = useState(false);
   const [aiSummary, setAiSummary] = useState(null);
   const [loadingSummary, setLoadingSummary] = useState(false);
+
+  const playerRef = useRef(null)
+  const [activeTab, setActiveTab] = useState(0)
 
   const { data, isLoading, isError: error } = useQuery({
     queryKey: ['videoDetail', id],
@@ -115,6 +120,7 @@ const VideoDetail = () => {
           >
             <Box sx={{ position: "relative", paddingTop: "56.25%" }}>
               <ReactPlayer
+                ref={playerRef}
                 url={`https://www.youtube.com/watch?v=${id}`}
                 width="100%"
                 height="100%"
@@ -311,10 +317,36 @@ const VideoDetail = () => {
             )}
           </Box>
           {/* Video Chat */}
-          <VideoChat
-            videoTitle={videoDetail?.title || ""}
-            videoDescription={videoDetail?.shortDescription || ""}
-          />
+          <Box mt={3}>
+            <Tabs
+              value={activeTab}
+              onChange={(_, val) => setActiveTab(val)}
+              sx={{
+                borderBottom: "1px solid rgba(255,255,255,0.1)",
+                "& .MuiTab-root": { color: "var(--text-secondary)", fontWeight: 700, textTransform: "none", fontSize: "0.95rem" },
+                "& .Mui-selected": { color: "#00E5FF !important" },
+                "& .MuiTabs-indicator": { bgcolor: "#00E5FF", height: 3 }
+              }}
+            >
+              <Tab label="🤖 AI Video Co-Pilot" />
+              <Tab label="📝 Cloud Smart Notes" />
+
+            </Tabs>
+            {activeTab === 0 ?(
+              <VideoChat
+                videoTitle={videoDetail?.title || ""}
+                videoDescription={videoDetail?.shortDescription || ""}
+              />
+              
+            ):(
+              <SmartNotes
+              videoId={id}
+              videoTitle={videoDetail?.title || ""}
+              playerRef={playerRef}
+              />
+            )}
+
+          </Box>
 
           <Box
             sx={{

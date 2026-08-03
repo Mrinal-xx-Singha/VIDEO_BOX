@@ -12,14 +12,14 @@ jobs:
 
     strategy:
       matrix:
-        node-version: [18.x]
+        node-version: [22.x]
 
     steps:
     - name: Checkout repository
-      uses: actions/checkout@v3
+      uses: actions/checkout@v4
       
     - name: Set up Node.js ${{ matrix.node-version }}
-      uses: actions/setup-node@v3
+      uses: actions/setup-node@v4
       with:
         node-version: ${{ matrix.node-version }}
         cache: 'npm'
@@ -31,3 +31,7 @@ jobs:
       run: npm run build
       env:
         CI: false # Prevents warnings from failing the build
+        NEXT_PUBLIC_SUPABASE_URL: https://placeholder-ci-build.supabase.co
+        NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY: placeholder_anon_key
+        REACT_APP_RAPID_API_KEY: placeholder_rapid_key
+        REACT_APP_GEMINI_API_KEY: placeholder_gemini_key
