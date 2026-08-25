@@ -8,17 +8,24 @@ const BASE_URL = 'https://youtube-search-and-download.p.rapidapi.com';
 const avatarCache = new Map();
 
 export const fetchFromAPI = async (url) => {
+  // Next.js native fetch requires a fully constructed URL string with params
+  const targetUrl = new URL(`${BASE_URL}/${url}`);
+  if (!targetUrl.searchParams.has('maxResults')) {
+    targetUrl.searchParams.append('maxResults', '50');
+  }
+
   const options = {
-    params: {
-      maxResults: '50'
-    },
+    method: 'GET',
     headers: {
       'X-RapidAPI-Key': process.env.RAPID_API_KEY || process.env.REACT_APP_RAPID_API_KEY,
       'X-RapidAPI-Host': 'youtube-search-and-download.p.rapidapi.com'
     },
+    // CRITICAL FIX: Cache the result on Vercel Edge for 24 hours!
+    next: { revalidate: 86400 } 
   };
 
-  const { data } = await axios.get(`${BASE_URL}/${url}`, options);
+  const response = await fetch(targetUrl.toString(), options);
+  const data = await response.json();
   return data;
 };
 
